@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.illustricious.wearmusic" android:versionCode="5" android:versionName="1.0">
+  <uses-feature android:name="android.hardware.type.watch" android:required="true"/>
+  <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+  <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <application android:theme="@style/AppTheme" android:label="@string/app_name" android:icon="@drawable/ic_launcher">
+    <activity android:name="com.illustricious.wearmusic.MainActivity" android:exported="true" android:launchMode="singleTop">
+      <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+    </activity>
+    <activity android:name="com.illustricious.wearmusic.NowPlayingActivity" android:exported="false" android:launchMode="singleTop"/>
+    <activity android:name="com.illustricious.wearmusic.MusicActivity" android:exported="false" android:windowSoftInputMode="stateHidden|adjustPan"/>
+    <activity android:name="com.illustricious.wearmusic.EqualizerActivity" android:exported="false"/>
+    <activity android:name="com.illustricious.wearmusic.CustomEqActivity" android:exported="false"/>
+    <activity android:name="com.illustricious.wearmusic.DevicesActivity" android:exported="false"/>
+    <service android:name="com.illustricious.wearmusic.PlayerService" android:exported="false" android:foregroundServiceType="mediaPlayback"/>
+  </application>
+</manifest>
