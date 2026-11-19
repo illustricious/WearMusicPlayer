@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.illustricious.wearmusic" android:versionCode="6" android:versionName="1.1">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.illustricious.wearmusic" android:versionCode="7" android:versionName="1.1.1">
   <uses-feature android:name="android.hardware.type.watch" android:required="true"/>
   <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
@@ -22,3 +22,4 @@
     <service android:name="com.illustricious.wearmusic.PlayerService" android:exported="false" android:foregroundServiceType="mediaPlayback"/>
   </application>
 </manifest>
+
