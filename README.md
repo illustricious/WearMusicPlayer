@@ -1,10 +1,18 @@
-# Music for Wear OS
+# WearMusicPlayer
 
 Music is an offline audio player for Wear OS. It plays audio stored on the watch and includes optional controls for Soundcore R50i NC (A3959) earbuds.
 
-## Music v1.0
+## Music v1.1
 
-- Now Playing uses a subdued album cover behind the controls and a circular seek bar. Tracks without embedded artwork use a record-like background.
+- New music-first home, a dedicated earbuds screen, and a black/lime visual theme.
+- Round-screen Now Playing separates artwork, two-line title, artist, playback controls, an interior seek rail, and navigation.
+- The crown opens the native Wear OS media volume panel instead of replacing the timestamp with a number.
+- Playback options include repeat off/all/one and a 15/30/60-minute sleep timer with cancellation. Repeat is saved locally; the sleep timer applies to the current playback session and requires a selected track.
+- Version name 1.1, version code 6.
+
+## Earlier v1.0 behavior
+
+- Tracks without embedded artwork use a record-like thumbnail.
 - Search covers track titles, artists, and albums. The watch crown controls volume on Now Playing and scrolls the Library.
 - Android media controls and compatible earbud controls can play, pause, and skip tracks through a media session.
 - The app and its in-app controls are in English. Track metadata and any system dialogs use their original text.
@@ -36,7 +44,7 @@ On Windows, set `JAVA_HOME` to JDK 17 or newer and `ANDROID_HOME` to an SDK with
 
 The signed APK is created at `app/build/outputs/apk/debug/app-debug.apk`. Public release signing should use a dedicated release key. The sideload build uses the existing development certificate so it can update earlier APKs signed with that certificate. The private keystore is excluded from the source package.
 
-The PC checks cover APK packaging and signature, plus 16 playback and metadata smoke scenarios with Android test doubles. Android runtime, screen-off audio, rotary input, artwork rendering, and Bluetooth controls have yet to be verified on a Wear OS device or emulator.
+This revision passes the bundled build and APK signature verification. Device observations and limits are recorded in DEVICE-TEST.md. This is a development-signed sideload build.
 
 ## License
 

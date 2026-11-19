@@ -22,21 +22,21 @@ import java.util.List;
 final class Ui {
     private Ui() {}
 
-    static final int BLACK = Color.BLACK, SURFACE = Color.rgb(24, 24, 28), SURFACE_HI = Color.rgb(44, 44, 52),
-        ACCENT = Color.rgb(125, 211, 252), OK = Color.rgb(134, 239, 172), BAD = Color.rgb(248, 113, 113),
-        MUTED = Color.rgb(150, 156, 170), WARN = Color.rgb(250, 204, 21), WHITE = Color.WHITE;
+    static final int BLACK = Color.BLACK, SURFACE = Color.rgb(23, 29, 32), SURFACE_HI = Color.rgb(39, 49, 53),
+        ACCENT = Color.rgb(197, 245, 111), OK = Color.rgb(134, 239, 172), BAD = Color.rgb(248, 113, 113),
+        MUTED = Color.rgb(163, 175, 178), WARN = Color.rgb(250, 204, 21), WHITE = Color.WHITE;
 
     static int dp(Context c, float v) { return Math.round(v * c.getResources().getDisplayMetrics().density); }
 
     /** Horizontal / vertical safe insets: larger on round faces where corners are clipped. */
     static int insetX(Context c) {
         DisplayMetrics m = c.getResources().getDisplayMetrics();
-        return c.getResources().getConfiguration().isScreenRound() ? Math.round(m.widthPixels * 0.11f) : dp(c, 8);
+        return c.getResources().getConfiguration().isScreenRound() ? Math.round(m.widthPixels * 0.13f) : dp(c, 8);
     }
 
     static int insetY(Context c) {
         DisplayMetrics m = c.getResources().getDisplayMetrics();
-        return c.getResources().getConfiguration().isScreenRound() ? Math.round(m.heightPixels * 0.16f) : dp(c, 8);
+        return c.getResources().getConfiguration().isScreenRound() ? Math.round(m.heightPixels * 0.18f) : dp(c, 8);
     }
 
     /** Vertical scrolling page (crown-scrollable); returns the content column to add views to. */
@@ -90,6 +90,9 @@ final class Ui {
         Button b = new Button(c);
         b.setText(label); b.setAllCaps(false); b.setOnClickListener(l); b.setTextSize(15);
         b.setStateListAnimator(null);
+        b.setMinHeight(0); b.setMinimumHeight(0);
+        b.setIncludeFontPadding(false);
+        b.setMaxLines(2); b.setEllipsize(android.text.TextUtils.TruncateAt.END);
         b.setPadding(dp(c, 12), 0, dp(c, 12), 0);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(c, 46));
         lp.topMargin = dp(c, 5);

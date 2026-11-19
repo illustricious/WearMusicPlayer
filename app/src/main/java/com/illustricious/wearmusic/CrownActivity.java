@@ -14,6 +14,10 @@ import android.widget.ScrollView;
  * crown for something else (Now Playing: volume) override {@link #onCrown(float)}.
  */
 abstract class CrownActivity extends Activity {
+    @Override protected void onCreate(android.os.Bundle saved) {
+        super.onCreate(saved);
+        getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
     private static final float SPEED = 1.6f;
 
     @Override public boolean onGenericMotionEvent(MotionEvent e) {

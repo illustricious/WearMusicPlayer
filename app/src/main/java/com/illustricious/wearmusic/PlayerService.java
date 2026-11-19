@@ -55,6 +55,20 @@ public final class PlayerService extends Service {
     private List<MusicLibrary.Track> queue = Collections.emptyList();
     private MusicLibrary.Track publishedTrack;
     private int index = -1, focusGeneration;
+    private int repeatMode;
+    private long sleepDeadline;
+    private final Runnable sleepTimeout = () -> { sleepDeadline = 0; pause(); };
+    int repeatMode() { return repeatMode; }
+    void setRepeatMode(int mode) { repeatMode = Math.max(0, Math.min(2, mode)); getSharedPreferences("playback", MODE_PRIVATE).edit().putInt("repeat", repeatMode).apply(); publish(); }
+    void setSleepMinutes(int minutes) {
+        if (minutes > 0 && current() == null) return;
+        main.removeCallbacks(sleepTimeout);
+        sleepDeadline = minutes > 0 ? SystemClock.elapsedRealtime() + minutes * 60000L : 0;
+        if (minutes > 0) main.postDelayed(sleepTimeout, minutes * 60000L);
+        publish();
+    }
+    int sleepMinutes() { return sleepDeadline == 0 ? 0 : (int) Math.max(1, (sleepDeadline - SystemClock.elapsedRealtime() + 59999) / 60000); }
+
     private boolean prepared, wantsPlay, resumeOnFocus, focused, foreground;
     private boolean notificationPlaying;
     private final Runnable pausedTimeout = () -> {
@@ -67,6 +81,7 @@ public final class PlayerService extends Service {
 
     @Override public void onCreate() {
         super.onCreate();
+        repeatMode = getSharedPreferences("playback", MODE_PRIVATE).getInt("repeat", 0);
         audio = getSystemService(AudioManager.class);
         notifications = getSystemService(NotificationManager.class);
         notifications.createNotificationChannel(new NotificationChannel(CHANNEL, "Playback", NotificationManager.IMPORTANCE_LOW));
@@ -171,7 +186,8 @@ public final class PlayerService extends Service {
 
     void next() {
         if (index + 1 >= queue.size()) {
-            stopPlayback();
+            if (repeatMode == 1 && !queue.isEmpty()) { index = 0; prepareCurrent(); }
+            else stopPlayback();
             return;
         }
         index++;
@@ -193,6 +209,8 @@ public final class PlayerService extends Service {
 
     private void stopPlayback() {
         main.removeCallbacks(pausedTimeout);
+        main.removeCallbacks(sleepTimeout);
+        sleepDeadline = 0;
         wantsPlay = false;
         resumeOnFocus = false;
         releasePlayer();
@@ -225,7 +243,10 @@ public final class PlayerService extends Service {
                 if (mp == player) publish();
             });
             candidate.setOnCompletionListener(mp -> {
-                if (mp == player && wantsPlay) next();
+                if (mp == player && wantsPlay) {
+                    if (repeatMode == 2) { seekTo(0); startPrepared(); }
+                    else next();
+                }
             });
             candidate.setOnErrorListener((mp, what, extra) -> {
                 if (mp == player) prepared = false;
@@ -248,6 +269,7 @@ public final class PlayerService extends Service {
     }
 
     private void startPrepared() {
+        if (sleepDeadline > 0 && SystemClock.elapsedRealtime() >= sleepDeadline) { sleepTimeout.run(); return; }
         if (!requestFocus()) {
             wantsPlay = false;
             schedulePausedTimeout();

@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.LinearGradient;
 import android.graphics.Path;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -28,25 +26,25 @@ final class PlayerView extends FrameLayout {
         void onToggle();
         void onNext();
         void onLibrary();
+        void onOptions();
         void onSeek(float fraction);
     }
 
-    private static final int ACCENT = 0xffbaffd5;
+    private static final int ACCENT = 0xffc5f56f;
     private static final int INK = 0xff101c17;
     private static final int WHITE = 0xfff5fff9;
     private static final int MUTED = 0xffc0d2c8;
-    private final TextView heading, title, artist, time, library;
+    private final TextView heading, title, artist, time, library, options;
     private final ImageButton previous, toggle, next;
     private final Backdrop backdrop;
     private int positionMs, durationMs;
     private boolean hasTrack, pauseIcon;
-    private String overlay;
     private int displayedSecond = -1;
     private String displayTime = "";
 
     PlayerView(Context context, Callbacks callbacks) {
         super(context);
-        setBackgroundColor(0xff0b1512);
+        setBackgroundColor(0xff000000);
         backdrop = new Backdrop(context, callbacks);
         addView(backdrop, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         heading = label("Now Playing", ACCENT, true);
@@ -63,9 +61,13 @@ final class PlayerView extends FrameLayout {
         toggle = control(android.R.drawable.ic_media_play, "Play", true, callbacks::onToggle);
         next = control(android.R.drawable.ic_media_next, "Next track", false, callbacks::onNext);
         library = label("Library", WHITE, true);
-        library.setBackground(surface(0xc9354940, false));
+        library.setBackground(surface(0xff1d292d, false));
         library.setFocusable(true);
         library.setOnClickListener(view -> callbacks.onLibrary());
+        options = label("Options", WHITE, true);
+        options.setBackground(surface(0xff1d292d, false));
+        options.setFocusable(true);
+        options.setOnClickListener(view -> callbacks.onOptions());
         previous.setEnabled(false);
         toggle.setEnabled(false);
         next.setEnabled(false);
@@ -90,7 +92,7 @@ final class PlayerView extends FrameLayout {
             new int[][] {new int[] {-android.R.attr.state_enabled}, new int[0]},
             new int[] {0xff899890, primary ? INK : WHITE}));
         button.setContentDescription(description);
-        button.setBackground(surface(primary ? ACCENT : 0xd932453c, primary));
+        button.setBackground(surface(primary ? ACCENT : 0xff1d292d, primary));
         button.setPadding(Ui.dp(getContext(), 7), Ui.dp(getContext(), 7), Ui.dp(getContext(), 7), Ui.dp(getContext(), 7));
         button.setOnClickListener(view -> action.run());
         addView(button, new LayoutParams(0, 0));
@@ -109,14 +111,15 @@ final class PlayerView extends FrameLayout {
         int size = Math.min(width, height);
         horizontalInset = (width - size) / 2f;
         verticalInset = (height - size) / 2f;
-        place(heading, size, 0.50f, 0.145f, 0.57f, 0.09f, 0.053f);
-        place(title, size, 0.50f, 0.33f, 0.73f, 0.20f, 0.090f);
-        place(artist, size, 0.50f, 0.465f, 0.76f, 0.09f, 0.061f);
-        place(time, size, 0.50f, 0.548f, 0.68f, 0.08f, 0.053f);
-        place(previous, size, 0.244f, 0.706f, 0.232f, 0.232f, 0);
-        place(toggle, size, 0.50f, 0.706f, 0.262f, 0.262f, 0);
-        place(next, size, 0.756f, 0.706f, 0.232f, 0.232f, 0);
-        place(library, size, 0.50f, 0.888f, 0.37f, 0.125f, 0.057f);
+        place(heading, size, .5f, .115f, .55f, .06f, .036f);
+        place(title, size, .5f, .38f, .72f, .15f, .055f);
+        place(artist, size, .5f, .49f, .70f, .05f, .043f);
+        place(previous, size, .25f, .635f, .205f, .205f, 0);
+        place(toggle, size, .5f, .635f, .23f, .23f, 0);
+        place(next, size, .75f, .635f, .205f, .205f, 0);
+        place(time, size, .5f, .805f, .54f, .04f, .037f);
+        place(library, size, .375f, .88f, .24f, .10f, .037f);
+        place(options, size, .635f, .88f, .24f, .10f, .037f);
         textSize = size;
         super.onMeasure(widthSpec, heightSpec);
     }
@@ -162,11 +165,6 @@ final class PlayerView extends FrameLayout {
         updateTime();
     }
 
-    void setOverlay(String text) {
-        overlay = text;
-        updateTime();
-    }
-
     void setArtwork(Bitmap art) {
         backdrop.setArtwork(art);
     }
@@ -177,7 +175,7 @@ final class PlayerView extends FrameLayout {
             displayedSecond = position / 1000;
             displayTime = MusicLibrary.formatDuration(position) + " / " + MusicLibrary.formatDuration(durationMs);
         }
-        String value = overlay != null ? overlay : durationMs > 0 ? displayTime : hasTrack ? "" : "Open Library to play";
+        String value = durationMs > 0 ? displayTime : hasTrack ? "" : "Open Library to play";
         if (!TextUtils.equals(time.getText(), value)) time.setText(value);
     }
 
@@ -188,9 +186,8 @@ final class PlayerView extends FrameLayout {
         private final RectF disc = new RectF();
         private final Path artClip = new Path();
         private final RectF ring = new RectF();
-        private Shader shade;
         private Bitmap artwork;
-        private float radius, centerX, centerY, stroke;
+        private float centerX, centerY, stroke;
         private float progress, preview = -1;
 
         Backdrop(Context context, Callbacks callbacks) {
@@ -204,12 +201,10 @@ final class PlayerView extends FrameLayout {
             centerY = h / 2f;
             float size = Math.min(w, h);
             stroke = size * 0.013f;
-            radius = size * 0.475f;
-            ring.set(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
-            disc.set(centerX - size * 0.445f, centerY - size * 0.445f, centerX + size * 0.445f, centerY + size * 0.445f);
+            disc.set(centerX - size * .07f, size * .16f, centerX + size * .07f, size * .30f);
+            ring.set(w * .25f, h * .77f, w * .75f, h * .77f);
             artClip.reset();
             artClip.addOval(disc, Path.Direction.CW);
-            shade = h > 0 ? new LinearGradient(0, 0, 0, h, 0x32101b16, 0xf20a120e, Shader.TileMode.CLAMP) : null;
         }
 
         void setArtwork(Bitmap bitmap) {
@@ -236,7 +231,7 @@ final class PlayerView extends FrameLayout {
             if (artwork != null) {
                 canvas.save();
                 canvas.clipPath(artClip);
-                paint.setAlpha(105);
+                paint.setAlpha(255);
                 canvas.drawBitmap(artwork, artSource, disc, paint);
                 paint.setAlpha(255);
                 canvas.restore();
@@ -245,22 +240,19 @@ final class PlayerView extends FrameLayout {
                 paint.setStrokeWidth(stroke / 2);
                 paint.setColor(0xff354f42);
                 for (int band = 1; band <= 5; band++) {
-                    canvas.drawCircle(centerX, centerY, disc.width() * band / 12f, paint);
+                    canvas.drawCircle(disc.centerX(), disc.centerY(), disc.width() * band / 12f, paint);
                 }
                 paint.setStyle(Paint.Style.FILL);
             }
-            paint.setShader(shade);
-            canvas.drawOval(disc, paint);
-            paint.setShader(null);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(stroke);
             paint.setStrokeCap(Paint.Cap.ROUND);
-            paint.setColor(0xff344940);
-            canvas.drawArc(ring, -90, 360, false, paint);
+            paint.setColor(0xff2b363b);
+            canvas.drawLine(ring.left, ring.top, ring.right, ring.top, paint);
             float fraction = preview >= 0 ? preview : progress;
             if (fraction > 0) {
                 paint.setColor(ACCENT);
-                canvas.drawArc(ring, -90, 360 * fraction, false, paint);
+                canvas.drawLine(ring.left, ring.top, ring.left + ring.width() * fraction, ring.top, paint);
             }
         }
 
@@ -268,7 +260,7 @@ final class PlayerView extends FrameLayout {
             float x = event.getX() - centerX, y = event.getY() - centerY;
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (durationMs <= 0 || Math.abs(Math.hypot(x, y) - radius) > radius * 0.13f) return false;
+                    if (durationMs <= 0 || event.getX() < ring.left || event.getX() > ring.right || Math.abs(event.getY() - ring.top) > getHeight() * .035f) return false;
                     getParent().requestDisallowInterceptTouchEvent(true);
                     break;
                 case MotionEvent.ACTION_UP:
@@ -292,8 +284,7 @@ final class PlayerView extends FrameLayout {
         }
 
         private float fractionAt(float x, float y) {
-            double angle = Math.atan2(x, -y) / (Math.PI * 2);
-            return (float) (angle < 0 ? angle + 1 : angle);
+            return Math.max(0f, Math.min(1f, (x + centerX - ring.left) / ring.width()));
         }
     }
 }

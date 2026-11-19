@@ -101,9 +101,11 @@ public final class MusicActivity extends CrownActivity {
                 if (convert == null) {
                     title.setTextSize(15);
                     title.setSingleLine(true);
+                    title.setEllipsize(android.text.TextUtils.TruncateAt.END);
                     title.setTextColor(Ui.WHITE);
                     subtitle.setTextSize(12);
                     subtitle.setSingleLine(true);
+                    subtitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
                     subtitle.setTextColor(Ui.MUTED);
                     row.setBackground(Ui.pill(MusicActivity.this, Ui.SURFACE));
                     row.setPadding(Ui.dp(MusicActivity.this, 16), Ui.dp(MusicActivity.this, 6),

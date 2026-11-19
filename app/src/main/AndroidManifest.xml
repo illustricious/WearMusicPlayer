@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.illustricious.wearmusic" android:versionCode="5" android:versionName="1.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.illustricious.wearmusic" android:versionCode="6" android:versionName="1.1">
   <uses-feature android:name="android.hardware.type.watch" android:required="true"/>
   <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
@@ -12,6 +12,8 @@
     <activity android:name="com.illustricious.wearmusic.MainActivity" android:exported="true" android:launchMode="singleTop">
       <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
     </activity>
+    <activity android:name="com.illustricious.wearmusic.EarbudsActivity" android:exported="false"/>
+    <activity android:name="com.illustricious.wearmusic.PlaybackOptionsActivity" android:exported="false"/>
     <activity android:name="com.illustricious.wearmusic.NowPlayingActivity" android:exported="false" android:launchMode="singleTop"/>
     <activity android:name="com.illustricious.wearmusic.MusicActivity" android:exported="false" android:windowSoftInputMode="stateHidden|adjustPan"/>
     <activity android:name="com.illustricious.wearmusic.EqualizerActivity" android:exported="false"/>

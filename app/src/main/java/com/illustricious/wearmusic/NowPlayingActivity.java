@@ -45,7 +45,6 @@ public final class NowPlayingActivity extends CrownActivity implements PlayerSer
             ui.postDelayed(this, 500);
         }
     };
-    private final Runnable clearOverlay = () -> view.setOverlay(null);
 
     @Override protected void onCreate(Bundle saved) {
         super.onCreate(saved);
@@ -64,8 +63,6 @@ public final class NowPlayingActivity extends CrownActivity implements PlayerSer
     @Override protected void onStop() {
         visible = false;
         ui.removeCallbacks(tick);
-        ui.removeCallbacks(clearOverlay);
-        view.setOverlay(null);
         if (player != null) player.removeListener(this);
         player = null;
         if (bound) unbindService(connection);
@@ -125,14 +122,13 @@ public final class NowPlayingActivity extends CrownActivity implements PlayerSer
         if (steps == 0) return true;
         crownAccumulator -= steps * perStep;
         for (int i = 0; i < Math.abs(steps); i++) {
-            audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, steps > 0 ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER, 0);
+            audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, steps > 0 ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
         }
-        view.setOverlay("Volume " + audio.getStreamVolume(AudioManager.STREAM_MUSIC) + "/" + audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-        ui.removeCallbacks(clearOverlay);
-        ui.postDelayed(clearOverlay, 1200);
+
         return true;
     }
 
+    @Override public void onOptions() { startActivity(new Intent(this, PlaybackOptionsActivity.class)); }
     @Override public void onPrevious() { if (player != null) player.previous(); }
     @Override public void onToggle() { if (player != null) player.toggle(); }
     @Override public void onNext() { if (player != null) player.next(); }
